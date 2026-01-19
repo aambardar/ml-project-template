@@ -1,16 +1,16 @@
 # ML Project Template
 
-A well-organized, reproducible starter template for machine learning projects in Python. Designed for teams using Docker for consistent development environments.
+A well-organized, reproducible starter template for machine learning projects in Python. Designed for teams using Docker and micromamba for consistent, reproducible development environments.
 
 ## Features
 
-- Modern Python packaging with `pyproject.toml`
-- Layered dependency management (base, dev, project-specific)
-- Single Docker container for all development tasks
-- Optimized Docker layer caching
+- **Micromamba** for fast, reproducible dependency management
+- **Docker-first** development workflow
+- Single `environment.yml` for all dependencies (Python + system libs)
 - Pre-commit hooks for code quality
 - Makefile for common commands
 - Jupyter Lab integration
+- GPU-ready (easy CUDA/cuDNN setup via conda-forge)
 
 ## Project Structure
 
@@ -33,11 +33,12 @@ ml-project-template/
 │   ├── training/             # Training scripts
 │   └── utils/                # Helper functions
 ├── tests/                    # Unit and integration tests
-├── .env.example              # Environment variables template
-├── .pre-commit-config.yaml   # Pre-commit hooks config
+├── environment.yml           # Dependencies (micromamba)
+├── pyproject.toml            # Project metadata & tool configs
 ├── docker-compose.yml        # Docker configuration
 ├── Makefile                  # Common commands
-├── pyproject.toml            # Project config & dependencies
+├── .env.example              # Environment variables template
+├── .pre-commit-config.yaml   # Code quality hooks
 └── README.md
 ```
 
@@ -97,7 +98,6 @@ cd ml-project-template
 cp .env.example .env
 
 # Edit .env with your settings (API keys, paths, etc.)
-# Required: Review and update any project-specific variables
 ```
 
 ### Step 4: Build the Docker Image
@@ -106,7 +106,7 @@ cp .env.example .env
 make build
 ```
 
-This builds the development container with all ML dependencies. First build takes longer as it downloads and installs packages.
+This builds the development container with micromamba and all ML dependencies. First build takes longer as it downloads packages.
 
 ### Step 5: Start Development
 
@@ -130,6 +130,9 @@ Run these commands inside the container to verify everything works:
 ```bash
 # Check Python
 python --version
+
+# Check micromamba environment
+micromamba list
 
 # Check key packages
 python -c "import numpy; import pandas; import sklearn; print('All packages OK')"
@@ -183,8 +186,6 @@ make up
 make shell
 ```
 
-You're now inside the development container with all dependencies installed.
-
 ## Available Commands
 
 ```bash
@@ -215,24 +216,28 @@ make clean        # Remove containers and cache
 
 ## Dependencies
 
-Dependencies are managed in `pyproject.toml` with three groups:
+Dependencies are managed in `environment.yml` using micromamba (conda-forge).
 
-| Group | Purpose |
-|-------|---------|
-| `base` | Core ML packages (numpy, pandas, scikit-learn, jupyter, etc.) |
-| `dev` | Development tools (pytest, black, flake8, mypy, pre-commit) |
-| `dependencies` | Project-specific packages (add your own) |
+### File Responsibilities
 
-### Adding Project-Specific Dependencies
+| File | Purpose |
+|------|---------|
+| `environment.yml` | All dependencies (Python packages + system libs) |
+| `pyproject.toml` | Project metadata + tool configurations (black, pytest, mypy) |
 
-Edit `pyproject.toml`:
+### Adding Dependencies
 
-```toml
-[project]
-dependencies = [
-    "torch==2.1.2",
-    "transformers==4.37.0",
-]
+Edit `environment.yml`:
+
+```yaml
+dependencies:
+  # Add conda packages
+  - pytorch=2.1.2
+  - cudatoolkit=11.8
+
+  # Or add pip packages (if not on conda-forge)
+  - pip:
+      - transformers==4.37.0
 ```
 
 Then rebuild:
@@ -241,11 +246,20 @@ Then rebuild:
 make build
 ```
 
+### Why Micromamba?
+
+| Benefit | Description |
+|---------|-------------|
+| Fast installs | Parallel downloads, C++ implementation |
+| Better resolver | SAT solver prevents dependency conflicts |
+| System libraries | Installs CUDA, MKL, OpenCV without system packages |
+| Reproducibility | Exact environment locks via `micromamba env export` |
+
 ## Docker
 
 ### Single Container Workflow
 
-All development happens in one container. The Makefile provides shortcuts:
+All development happens in one container:
 
 ```bash
 make shell              # Interactive shell
@@ -282,6 +296,31 @@ Update `docker/Dockerfile` to use it:
 
 ```dockerfile
 FROM your-registry/ml-base:1.0.0
+```
+
+### GPU Support
+
+To enable GPU support, add CUDA to `environment.yml`:
+
+```yaml
+dependencies:
+  - pytorch=2.1.2
+  - pytorch-cuda=11.8
+  - cudatoolkit=11.8
+```
+
+And update `docker-compose.yml`:
+
+```yaml
+services:
+  dev:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 ```
 
 ## Environment Variables
