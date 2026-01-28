@@ -24,6 +24,7 @@ ml-project-template/
 │   ├── base.Dockerfile       # Base ML image (team-wide)
 │   └── Dockerfile            # Project image
 ├── models/                   # Trained and serialized models
+├── notebooks/                # Jupyter notebooks for exploration and prototyping
 ├── outputs/
 │   ├── figures/              # Generated graphics and plots
 │   └── logs/                 # Training and experiment logs
