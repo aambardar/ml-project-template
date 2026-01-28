@@ -17,3 +17,10 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+    healthcheck:
+      test: ["CMD", "python", "env_health_check_gpu.py"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
