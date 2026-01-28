@@ -34,6 +34,7 @@ ml-project-template/
 │   ├── training/             # Training scripts
 │   └── utils/                # Helper functions
 ├── tests/                    # Unit and integration tests
+├── configs/                  # Experiment and training configurations
 ├── environment.yml           # Dependencies (micromamba)
 ├── pyproject.toml            # Project metadata & tool configs
 ├── docker-compose.yml        # Docker configuration

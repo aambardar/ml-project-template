@@ -1,0 +1,40 @@
+# Training configuration
+# Usage: Load with PyYAML or OmegaConf in your training script
+
+# Experiment metadata
+experiment:
+  name: "baseline"
+  seed: 42
+  output_dir: "outputs"
+
+# Data settings
+data:
+  train_path: "data/processed/train.csv"
+  val_path: "data/processed/val.csv"
+  test_path: "data/processed/test.csv"
+  batch_size: 32
+  num_workers: 4
+
+# Model architecture
+model:
+  name: "mlp"
+  hidden_dims: [256, 128, 64]
+  dropout: 0.2
+  activation: "relu"
+
+# Training hyperparameters
+training:
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  optimizer: "adam"
+  scheduler: "cosine"
+  early_stopping:
+    patience: 10
+    min_delta: 0.001
+
+# Logging and checkpointing
+logging:
+  log_every_n_steps: 10
+  save_checkpoints: true
+  checkpoint_every_n_epochs: 5
