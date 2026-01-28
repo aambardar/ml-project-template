@@ -1,17 +1,44 @@
+# Docker Compose for ML Development
+# ==================================
+# Usage:
+#   docker compose up -d          # Start container in background
+#   docker compose exec dev bash  # Open shell in container
+#   docker compose down           # Stop container
+
 services:
   dev:
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: development
+    image: ml-project:latest
+    container_name: ml-dev
+
+    # Mount project directory for live code changes
     volumes:
       - .:/app
+      # Persist Jupyter settings between restarts
+      - jupyter-data:/root/.jupyter
+
+    # Load environment variables
     env_file:
       - .env
+
+    # Expose common ML service ports
     ports:
-      - "8888:8888"  # Jupyter
-      - "8000:8000"  # FastAPI/Uvicorn
-      - "6006:6006"  # TensorBoard
-      - "5000:5000"  # MLflow
+      - "8888:8888"   # JupyterLab
+      - "8000:8000"   # FastAPI / Model serving
+      - "6006:6006"   # TensorBoard
+      - "5000:5000"   # MLflow
+
+    # Keep container running for interactive use
     stdin_open: true
     tty: true
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Working directory
+    working_dir: /app
+
+volumes:
+  jupyter-data:

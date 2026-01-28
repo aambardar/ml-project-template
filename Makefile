@@ -1,7 +1,10 @@
-.PHONY: help build up down shell jupyter train lint format test test-cov pre-commit clean
+.PHONY: help build up up-gpu down shell jupyter train lint format test test-cov pre-commit clean
 
 # Run command in dev container (starts container if not running)
-RUN = docker-compose run --rm dev
+RUN = docker compose run --rm dev
+
+# GPU compose files
+COMPOSE_GPU = -f docker-compose.yml -f docker-compose.gpu.yml
 
 # Default target
 help:
@@ -10,7 +13,8 @@ help:
 	@echo ""
 	@echo "Getting Started:"
 	@echo "  make build       - Build Docker image"
-	@echo "  make up          - Start development container"
+	@echo "  make up          - Start development container (CPU)"
+	@echo "  make up-gpu      - Start development container (GPU)"
 	@echo "  make down        - Stop container"
 	@echo "  make shell       - Open shell in container"
 	@echo ""
@@ -35,18 +39,23 @@ help:
 # ==============================================================================
 
 build:
-	docker-compose build
+	docker compose build
 
 up:
-	docker-compose up -d dev
+	docker compose up -d dev
 	@echo ""
-	@echo "Container started. Run 'make shell' to enter."
+	@echo "Container started (CPU). Run 'make shell' to enter."
+
+up-gpu:
+	docker compose $(COMPOSE_GPU) up -d dev
+	@echo ""
+	@echo "Container started (GPU). Run 'make shell' to enter."
 
 down:
-	docker-compose down
+	docker compose down
 
 shell:
-	@docker-compose exec dev bash 2>/dev/null || docker-compose run --rm dev bash
+	@docker compose exec dev bash 2>/dev/null || docker compose run --rm dev bash
 
 # ==============================================================================
 # Development
@@ -90,7 +99,7 @@ test-cov:
 # ==============================================================================
 
 clean:
-	docker-compose down --rmi local --volumes --remove-orphans
+	docker compose down --rmi local --volumes --remove-orphans
 	rm -rf __pycache__ .pytest_cache .mypy_cache .coverage htmlcov
 	rm -rf build dist *.egg-info .ruff_cache
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

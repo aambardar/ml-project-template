@@ -1,60 +1,57 @@
-# Project Dockerfile with Micromamba
-# Build: docker-compose build
-# Run:   docker-compose up
-
+# Base ML Image with GPU Support
+# ================================
+# This image provides a complete ML environment with:
+# - CUDA runtime for GPU acceleration (via official PyTorch image)
+# - PyTorch with CUDA support (works out of the box)
+# - Core ML libraries (numpy, pandas, scikit-learn, etc.)
+# - JupyterLab and development tools
+#
+# Build:
+#   docker build -f docker/Dockerfile -t ml-base:latest .
+#
+# The image works both WITH and WITHOUT GPU:
+# - With GPU: Full CUDA acceleration
+# - Without GPU: Falls back to CPU automatically
+#
 # ==============================================================================
-# Development image
+# Base image: Official PyTorch with CUDA support
 # ==============================================================================
-FROM mambaorg/micromamba:1.5-jammy AS development
+# 1. Use the version we discussed for RTX 2060 / CUDA 12.1 compatibility
+FROM pytorch/pytorch:2.2.2-cuda12.1-cudnn8-runtime
 
-# Set environment variables
-ENV MAMBA_DOCKERFILE_ACTIVATE=1
-ENV PATH="/opt/conda/bin:$PATH"
+# 2. Temporary Build-time variables (vanish after build)
+ARG DEBIAN_FRONTEND=noninteractive
 
-# Set working directory
-WORKDIR /app
+# 3. Persistent Environment Variables (stay in the container)
+# We set these here because they are "static" logic for the app
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    APP_HOME=/app
 
-# Copy environment file
-COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml .
+WORKDIR $APP_HOME
 
-# Install all dependencies (base + dev)
-RUN micromamba install -y -n base -f environment.yml \
-    && micromamba clean --all --yes
+# 4. System dependencies (using the noninteractive ARG from above)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    build-essential \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy source code
-COPY --chown=$MAMBA_USER:$MAMBA_USER src/ ./src/
-COPY --chown=$MAMBA_USER:$MAMBA_USER tests/ ./tests/
-COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ./
+# 5. Install Python dependencies
+# (Note: We use requirements.txt here for simplicity/speed in Docker)
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Install package in editable mode
-RUN pip install -e . --no-deps
+# 6. Copy code last to keep build times fast
+COPY . .
 
-# Default command
-CMD ["/bin/bash"]
+# 7. Metadata
+LABEL maintainer="Ashu"
+LABEL description="Stable ML environment with GPU support"
 
-# ==============================================================================
-# Production image
-# ==============================================================================
-FROM mambaorg/micromamba:1.5-jammy AS production
-
-ENV MAMBA_DOCKERFILE_ACTIVATE=1
-ENV PATH="/opt/conda/bin:$PATH"
-
-WORKDIR /app
-
-# Copy environment file
-COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml .
-
-# Install dependencies (could use a separate prod environment.yml without dev deps)
-RUN micromamba install -y -n base -f environment.yml \
-    && micromamba clean --all --yes
-
-# Copy only production code
-COPY --chown=$MAMBA_USER:$MAMBA_USER src/ ./src/
-COPY --chown=$MAMBA_USER:$MAMBA_USER pyproject.toml ./
-
-# Install package
-RUN pip install . --no-deps
-
-# Default command (override as needed)
-CMD ["python", "-m", "src"]
+# Start the application
+# Default command (can be overridden by docker-compose)
+CMD ["python"]

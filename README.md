@@ -290,7 +290,7 @@ docker-compose run --rm dev python your_script.py
 Build and share a base image to speed up builds:
 
 ```bash
-docker build -f docker/base.Dockerfile -t your-registry/ml-base:1.0.0 .
+docker build -f docker/base.old.Dockerfile -t your-registry/ml-base:1.0.0 .
 docker push your-registry/ml-base:1.0.0
 ```
 

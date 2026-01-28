@@ -1,0 +1,19 @@
+# GPU Override for ML Development
+# ================================
+# Use with base compose file:
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# Or simply:
+#   make up-gpu
+#
+# Requires: nvidia-container-toolkit installed on host
+
+services:
+  dev:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
