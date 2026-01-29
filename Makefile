@@ -58,6 +58,37 @@ shell:
 	@docker compose exec dev bash 2>/dev/null || docker compose run --rm dev bash
 
 # ==============================================================================
+# Remote VM Management
+# ==============================================================================
+
+vm-ssh:
+	ssh $(DOCKER_VM_USER)@$(DOCKER_VM_IP)
+
+vm-status:
+	ssh $(DOCKER_VM_USER)@$(DOCKER_VM_IP) "docker ps"
+
+vm-setup:
+	@echo "Creating project directories on VM..."
+	ssh $(DOCKER_VM_USER)@$(DOCKER_VM_IP) "mkdir -p $(DOCKER_VM_PROJECT_BASE_PATH) $(DOCKER_VM_DATA_BASE_PATH) $(DOCKER_VM_MODELS_BASE_PATH) $(DOCKER_VM_OUTPUTS_BASE_PATH)"
+	@echo "Done. Directories created on VM."
+
+# VM host: use 'mlvm' when at home, 'mlvm-tailscale' when away
+VM_HOST ?= mlvm
+
+sync-vm:
+	@echo "Syncing project to VM ($(VM_HOST))..."
+	rsync -avz --exclude '.git' --exclude '__pycache__' --exclude '.venv' \
+		--exclude 'htmlcov' --exclude '.pytest_cache' --exclude '.mypy_cache' \
+		--exclude '*.pyc' --exclude '.coverage' \
+		. $(VM_HOST):~/projects/$(PROJECT_NAME)/
+	@echo ""
+	@echo "Project synced to VM at ~/projects/$(PROJECT_NAME)/"
+
+# Sync via Tailscale (when away from home)
+sync-vm-tailscale:
+	$(MAKE) sync-vm VM_HOST=mlvm-tailscale
+
+# ==============================================================================
 # Development
 # ==============================================================================
 

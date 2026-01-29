@@ -10,13 +10,25 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    image: ml-project:latest
+    image: ml-base:latest
     container_name: ml-dev
 
     # Mount project directory for live code changes
+    # [HOST PATH] : [CONTAINER PATH]
+    # Mount the left side On the right side location.
     volumes:
-      - .:/app
-      # Persist Jupyter settings between restarts
+      # Project code - synced via PyCharm
+      - ${DOCKER_VM_PROJECT_BASE_PATH:-.}/${PROJECT_NAME:-ml-default}:/app
+
+      # Data - large files, NOT synced (stays on VM)
+      - ${DOCKER_VM_DATA_BASE_PATH:-./data}/${PROJECT_NAME:-ml-default}:/data
+      # Models - trained model artifacts
+      - ${DOCKER_VM_MODELS_BASE_PATH:-./models}/${PROJECT_NAME:-ml-default}:/models
+
+      # Outputs - logs, figures, checkpoints
+      - ${DOCKER_VM_OUTPUTS_BASE_PATH:-./outputs}/${PROJECT_NAME:-ml-default}:/outputs
+
+      # Jupyter settings persistence
       - jupyter-data:/root/.jupyter
 
     # Load environment variables

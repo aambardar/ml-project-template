@@ -108,8 +108,8 @@ temp/
 *.bak
 
 # Docker
-docker/old.Dockerfile
-old.docker-compose.yml
+docker/Dockerfile
+docker-compose.yml
 .docker/
 
 # CI/CD

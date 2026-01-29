@@ -56,9 +56,8 @@ repos:
     rev: 1.7.7
     hooks:
       - id: bandit
-        args: ['-c', 'pyproject.toml']
-        additional_dependencies: ['bandit[toml]']
-        exclude: tests/
+        args: ['--skip', 'B101']
+        exclude: ^tests/
 
   # Jupyter notebook cleanup
   - repo: https://github.com/kynan/nbstripout

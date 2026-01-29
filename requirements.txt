@@ -1,6 +1,6 @@
 # Base ML packages for ml-base image
 # PyTorch, torchvision, torchaudio are already in the base image
-# Install with: pip install -r requirements-base.txt
+# Install with: pip install -r requirements.txt
 
 # Core Data Science
 numpy>=1.26,<1.27
