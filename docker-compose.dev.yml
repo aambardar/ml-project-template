@@ -1,0 +1,22 @@
+# Development Environment Override
+# ================================
+# Merges with base compose file to add development-specific settings.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+#   make up-dev
+
+services:
+  oneringtorulethemall:
+    # Development-specific environment variables
+    environment:
+      - ENVIRONMENT=development
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+
+    # Mount additional dev tools configs
+    volumes:
+      - ./configs:/app/configs:ro
+
+    # Development doesn't need restart policy
+    restart: "no"

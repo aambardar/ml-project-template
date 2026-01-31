@@ -147,8 +147,8 @@ git clone https://github.com/your-org/ml-project-template.git
 cd ml-project-template
 
 # Copy and configure environment
-cp .env.example .env
-nano .env  # Edit with your settings
+cp .env.dev.example .env.dev
+nano .env.dev  # Edit with your settings
 
 # Build the Docker image
 docker compose build
@@ -256,8 +256,8 @@ git clone https://github.com/your-org/ml-project-template.git
 cd ml-project-template
 
 # Copy environment template
-cp .env.example .env
-# Edit .env with your settings (especially VM IP and paths)
+cp .env.dev.example .env.dev
+# Edit .env.dev with your settings (especially VM IP and paths)
 ```
 
 ### 3.3 Configure SSH Access
@@ -530,7 +530,7 @@ Directory Structure:
    cd ~/Projects
    git clone https://github.com/company/ProjectOne.git
    cd ProjectOne
-   cp .env.example .env
+   cp .env.dev.example .env.dev
    ```
 
 2. Edit `.env`:
@@ -559,7 +559,7 @@ Directory Structure:
    cd ~/Projects
    git clone https://github.com/company/ProjectTwo.git
    cd ProjectTwo
-   cp .env.example .env
+   cp .env.dev.example .env.dev
    ```
 
 2. Edit `.env`:

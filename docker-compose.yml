@@ -1,17 +1,17 @@
 # Docker Compose for ML Development
 # ==================================
 # Usage:
-#   docker compose up -d          # Start container in background
-#   docker compose exec dev bash  # Open shell in container
-#   docker compose down           # Stop container
+#   docker compose up -d                            # Start container in background
+#   docker compose exec oneringtorulethemall bash   # Open shell in container
+#   docker compose down                             # Stop container
 
 services:
-  dev:
+  oneringtorulethemall:
     build:
       context: .
       dockerfile: docker/Dockerfile
     image: ml-base:latest
-    container_name: ml-dev
+    container_name: ml-one
 
     # Mount project directory for live code changes
     # [HOST PATH] : [CONTAINER PATH]
@@ -31,16 +31,12 @@ services:
       # Jupyter settings persistence
       - jupyter-data:/root/.jupyter
 
-    # Load environment variables
-    env_file:
-      - .env
-
     # Expose common ML service ports
     ports:
-      - "8888:8888"   # JupyterLab
-      - "8000:8000"   # FastAPI / Model serving
-      - "6006:6006"   # TensorBoard
-      - "5000:5000"   # MLflow
+      - "${JUPYTER_PORT:-8888}:${JUPYTER_PORT:-8888}"           # JupyterLab
+      - "${API_PORT:-8000}:${API_PORT:-8000}"                   # FastAPI / Model serving
+      - "${MLFLOW_PORT:-5000}:${MLFLOW_PORT:-5000}"             # MLflow
+      - "${TENSORBOARD_PORT:-6006}:${TENSORBOARD_PORT:-6006}"   # TensorBoard
 
     # Keep container running for interactive use
     stdin_open: true

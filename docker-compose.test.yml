@@ -1,0 +1,26 @@
+# Test Environment Override
+# =========================
+# Merges with base compose file to add test-specific settings.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.test.yml up -d
+#   make up-test
+
+services:
+  oneringtorulethemall:
+    # Test-specific environment variables
+    environment:
+      - ENVIRONMENT=test
+      - DEBUG=false
+      - LOG_LEVEL=WARNING
+      - TEST_MODE=true
+
+    # Different ports for test environment (avoid conflicts with dev)
+    ports:
+      - "${JUPYTER_PORT:-9888}:8888"
+      - "${API_PORT:-9000}:8000"
+      - "${TENSORBOARD_PORT:-7006}:6006"
+      - "${MLFLOW_PORT:-6000}:5000"
+
+    # Test doesn't need restart policy
+    restart: "no"

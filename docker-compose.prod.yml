@@ -1,0 +1,34 @@
+# Production Environment Override
+# ================================
+# Merges with base compose file to add production-specific settings.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#   make up-prod
+
+services:
+  oneringtorulethemall:
+    # Production-specific environment variables
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+
+    # Production should always restart
+    restart: always
+
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+        reservations:
+          memory: 8G
+
+    # Health check for production
+    healthcheck:
+      test: ["CMD", "python", "-c", "import torch; print('OK')"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

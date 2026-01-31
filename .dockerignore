@@ -88,7 +88,7 @@ wandb/
 lightning_logs/
 
 # Secrets and credentials
-.env
+.env.dev
 .env.*
 secrets.yaml
 secrets.json

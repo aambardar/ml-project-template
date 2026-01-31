@@ -9,7 +9,7 @@
 # Requires: nvidia-container-toolkit installed on host
 
 services:
-  dev:
+  oneringtorulethemall:
     deploy:
       resources:
         reservations:
