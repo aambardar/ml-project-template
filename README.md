@@ -26,7 +26,7 @@ A production-ready machine learning project template designed for **remote Docke
 │  │  │ Local Code   │  │         │      │ mounted at /app                │  │
 │  │  └──────────────┘  │         │      │                                 │  │
 │  │                    │         │  ┌───┴────────────────────────────┐   │  │
-│  │  Git clone here    │         │  │     Docker Container (ml-dev)  │   │  │
+│  │  Git clone here    │         │  │     Docker Container (ml-one)  │   │  │
 │  │                    │         │  │     - Python 3.11              │   │  │
 │  └────────────────────┘         │  │     - PyTorch + CUDA           │   │  │
 │                                 │  │     - All ML libraries         │   │  │
@@ -44,25 +44,33 @@ A production-ready machine learning project template designed for **remote Docke
 ```
 ml-project-template/
 ├── docker/
-│   └── Dockerfile            # ML environment (PyTorch + CUDA base)
+│   └── Dockerfile              # ML environment (PyTorch + CUDA base)
 ├── src/
-│   ├── data/                 # Data loading and preprocessing
-│   ├── models/               # Model architectures
-│   ├── training/             # Training scripts
-│   └── utils/                # Helper functions
-├── configs/                  # Experiment configurations (YAML)
-├── notebooks/                # Jupyter notebooks for exploration
-├── tests/                    # Unit and integration tests
-├── docs/                     # Documentation
-├── data/                     # [Local placeholder - actual data on VM]
-├── models/                   # [Local placeholder - actual models on VM]
-├── outputs/                  # [Local placeholder - actual outputs on VM]
-├── docker-compose.yml        # Base Docker configuration
-├── docker-compose.gpu.yml    # GPU override (adds NVIDIA runtime)
-├── requirements.txt          # Python dependencies
-├── Makefile                  # Common commands
-├── .env.example              # Environment variables template
-├── .pre-commit-config.yaml   # Code quality hooks
+│   ├── data/                   # Data loading and preprocessing
+│   ├── models/                 # Model architectures
+│   ├── training/               # Training scripts
+│   └── utils/                  # Helper functions
+├── configs/                    # Experiment configurations (YAML)
+├── notebooks/                  # Jupyter notebooks for exploration
+├── tests/                      # Unit and integration tests
+├── data/                       # [Local placeholder - actual data on VM]
+├── models/                     # [Local placeholder - actual models on VM]
+├── outputs/                    # [Local placeholder - actual outputs on VM]
+│
+├── docker-compose.yml          # Base Docker configuration
+├── docker-compose.gpu.yml      # GPU override (adds NVIDIA runtime)
+├── docker-compose.dev.yml      # Development environment override
+├── docker-compose.test.yml     # Test environment override
+├── docker-compose.prod.yml     # Production environment override
+│
+├── .env.example                # Environment variables template
+├── .env.dev                    # Development environment config
+├── .env.test                   # Test environment config
+├── .env.prod                   # Production environment config
+│
+├── requirements.txt            # Python dependencies
+├── Makefile                    # Common commands
+├── .pre-commit-config.yaml     # Code quality hooks
 └── README.md
 ```
 
@@ -147,7 +155,7 @@ git clone https://github.com/your-org/ml-project-template.git
 cd ml-project-template
 
 # Copy and configure environment
-cp .env.dev.example .env.dev
+cp .env.example .env.dev
 nano .env.dev  # Edit with your settings
 
 # Build the Docker image
@@ -169,10 +177,10 @@ docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
 
 # Verify container is running
 docker ps
-# Should show: ml-dev container running
+# Should show: ml-one container running
 
 # Test GPU access (if using GPU mode)
-docker exec ml-dev python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+docker exec ml-one python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 ```
 
 ---
@@ -200,7 +208,7 @@ docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
 
 ```bash
 # Check container status
-docker ps -a | grep ml-dev
+docker ps -a | grep ml-one
 
 # Start existing container
 docker compose up -d
@@ -225,10 +233,10 @@ docker compose up -d
 docker ps
 
 # Check container logs
-docker logs ml-dev
+docker logs ml-one
 
 # Enter container shell
-docker exec -it ml-dev bash
+docker exec -it ml-one bash
 
 # Inside container, verify environment
 python --version
@@ -256,7 +264,7 @@ git clone https://github.com/your-org/ml-project-template.git
 cd ml-project-template
 
 # Copy environment template
-cp .env.dev.example .env.dev
+cp .env.example .env.dev
 # Edit .env.dev with your settings (especially VM IP and paths)
 ```
 
@@ -331,8 +339,8 @@ This tells PyCharm to use the Python interpreter inside the Docker container on 
 
 4. **Click gear icon → Add → On Docker Compose**
    - Server: `ML-VM-Docker` (the one you just created)
-   - Configuration files: Select `docker-compose.yml`
-   - Service: `dev`
+   - Configuration files: Select `docker-compose.yml` (and optionally `docker-compose.dev.yml`)
+   - Service: `oneringtorulethemall`
    - Python interpreter path: `python`
 
 5. **Apply** — PyCharm will now index packages from the remote container
@@ -428,32 +436,48 @@ figure_path = OUTPUTS_DIR / "figures" / "loss_curve.png"
 ### Makefile Commands
 
 ```bash
-make help         # Show all available commands
+make help           # Show all available commands
 
-# Docker
-make build        # Build Docker image
-make up           # Start container (CPU)
-make up-gpu       # Start container (GPU)
-make down         # Stop container
-make shell        # Open shell in container
+# Docker (Base)
+make build          # Build Docker image
+make up             # Start container (CPU)
+make up-gpu         # Start container (GPU)
+make down           # Stop container
+make shell          # Open shell in container
+
+# Docker (Development)
+make build-dev      # Build with dev overrides
+make up-dev         # Start dev container (CPU)
+make up-gpu-dev     # Start dev container (GPU)
+
+# Docker (Test)
+make build-test     # Build with test overrides
+make up-test        # Start test container (CPU)
+make up-gpu-test    # Start test container (GPU)
+
+# Docker (Production)
+make build-prod     # Build with prod overrides
+make up-prod        # Start prod container (CPU)
+make up-gpu-prod    # Start prod container (GPU)
 
 # Development
-make jupyter      # Start Jupyter Lab
-make train        # Run training script
+make jupyter        # Start Jupyter Lab
+make train          # Run training script
 
 # Code Quality
-make lint         # Run flake8 + mypy
-make format       # Run black + isort
-make pre-commit   # Run all pre-commit hooks
+make lint           # Run flake8 + mypy
+make format         # Run black + isort
+make pre-commit     # Run all pre-commit hooks
 
 # Testing
-make test         # Run tests
-make test-cov     # Run tests with coverage
+make test           # Run tests
+make test-cov       # Run tests with coverage
 
 # VM Management
-make vm-ssh       # SSH into VM
-make vm-status    # Check Docker status on VM
-make sync-vm      # Rsync project to VM
+make vm-ssh         # SSH into VM
+make vm-status      # Check Docker status on VM
+make vm-setup       # Create project directories on VM
+make sync-vm        # Rsync project to VM
 ```
 
 ### Exposed Ports
@@ -465,9 +489,63 @@ make sync-vm      # Rsync project to VM
 | 6006 | TensorBoard | `http://192.168.1.39:6006` |
 | 5000 | MLflow | `http://192.168.1.39:5000` |
 
+**Note:** Test environment uses offset ports (9888, 9000, 7006, 6000) to avoid conflicts with dev.
+
 ---
 
-## Part 6: Code Quality
+## Part 6: Multi-Environment Configuration
+
+The project supports three environments: **development**, **test**, and **production**.
+
+### Environment Files
+
+| File | Purpose |
+|------|---------|
+| `.env.dev` | Development settings (default) |
+| `.env.test` | Test settings with offset ports |
+| `.env.prod` | Production settings |
+| `.env.example` | Template for new setups |
+
+### Docker Compose Override Strategy
+
+Compose files are layered using the `-f` flag:
+
+```bash
+# Development (CPU)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file .env.dev up -d
+
+# Development (GPU)
+docker compose -f docker-compose.yml -f docker-compose.dev.yml -f docker-compose.gpu.yml --env-file .env.dev up -d
+
+# Test (CPU)
+docker compose -f docker-compose.yml -f docker-compose.test.yml --env-file .env.test up -d
+
+# Production (GPU)
+docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.gpu.yml --env-file .env.prod up -d
+```
+
+Or use the Makefile shortcuts:
+
+```bash
+make up-dev         # Dev + CPU
+make up-gpu-dev     # Dev + GPU
+make up-test        # Test + CPU
+make up-gpu-prod    # Prod + GPU
+```
+
+### Environment Differences
+
+| Setting | Development | Test | Production |
+|---------|-------------|------|------------|
+| `DEBUG` | true | false | false |
+| `LOG_LEVEL` | DEBUG | WARNING | INFO |
+| `restart` | no | no | always |
+| Jupyter Port | 8888 | 9888 | 8888 |
+| API Port | 8000 | 9000 | 8000 |
+
+---
+
+## Part 7: Code Quality
 
 Pre-commit hooks automatically run on `git commit`:
 
@@ -495,7 +573,7 @@ make lint
 
 ---
 
-## Example Scenario: Two Projects, Two Developers
+## Part 8: Example Scenario — Two Projects, Two Developers
 
 This example demonstrates two developers (Alice and Bob) working on two separate projects (ProjectOne and ProjectTwo) using the same VM infrastructure.
 
@@ -530,7 +608,7 @@ Directory Structure:
    cd ~/Projects
    git clone https://github.com/company/ProjectOne.git
    cd ProjectOne
-   cp .env.dev.example .env.dev
+   cp .env.example .env.dev
    ```
 
 2. Edit `.env`:
@@ -548,7 +626,7 @@ Directory Structure:
    - Local: `/Users/alice/Projects/ProjectOne`
    - Remote: `/home/mluser/workspace/projects/ProjectOne`
 
-4. Container name: `projectone-dev` (or shared `ml-dev`)
+4. Container: `ml-one` (shared ML environment)
 
 ### Bob's Setup (ProjectTwo)
 
@@ -559,7 +637,7 @@ Directory Structure:
    cd ~/Projects
    git clone https://github.com/company/ProjectTwo.git
    cd ProjectTwo
-   cp .env.dev.example .env.dev
+   cp .env.example .env.dev
    ```
 
 2. Edit `.env`:
@@ -590,14 +668,14 @@ Directory Structure:
 │  │                 │                 │                    │            │    │
 │  └─────────────────┘                 │                    ▼            │    │
 │                                      │  ┌─────────────────────────┐   │    │
-│                                      │  │ Container: projectone   │   │    │
+│                                      │  │ Container: ml-one       │   │    │
 │  Bob's MacBook                       │  │ /app ◄── ProjectOne     │   │    │
 │  ┌─────────────────┐                 │  │ /data ◄── data/ProjectOne   │    │
 │  │ PyCharm Pro     │                 │  │ /models, /outputs       │   │    │
 │  │                 │    SSH Sync     │  └─────────────────────────┘   │    │
 │  │ ProjectTwo/ ────┼────────────────►│                                │    │
 │  │                 │                 │  ┌─────────────────────────┐   │    │
-│  └─────────────────┘                 │  │ Container: projecttwo   │   │    │
+│  └─────────────────┘                 │  │ Container: ml-one       │   │    │
 │                                      │  │ /app ◄── ProjectTwo     │   │    │
 │                                      │  │ /data ◄── data/ProjectTwo   │    │
 │                                      │  │ /models, /outputs       │   │    │
@@ -633,7 +711,7 @@ Directory Structure:
 
 ---
 
-## Troubleshooting
+## Part 9: Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
