@@ -1,9 +1,9 @@
-# Byte-compiled / optimized / DLL files
+# ==============================================================================
+# Python
+# ==============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
 *.so
 
 # Distribution / packaging
@@ -34,7 +34,9 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# ==============================================================================
+# Testing & Coverage
+# ==============================================================================
 htmlcov/
 .tox/
 .nox/
@@ -49,37 +51,25 @@ coverage.xml
 .pytest_cache/
 cover/
 
-# Translations
-*.mo
-*.pot
+# ==============================================================================
+# Type Checking & Linting
+# ==============================================================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-
-# IPython
-profile_default/
-ipython_config.py
+# ==============================================================================
+# Virtual Environments
+# ==============================================================================
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
 
 # pyenv
 .python-version
@@ -96,47 +86,17 @@ poetry.lock
 # PEP 582
 __pypackages__/
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+# ==============================================================================
+# Jupyter
+# ==============================================================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+profile_default/
+ipython_config.py
 
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env.dev
-.venv
-.venv/
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# pytype static type analyzer
-.pytype/
-
-# Cython debug symbols
-cython_debug/
-
+# ==============================================================================
+# IDEs & Editors
+# ==============================================================================
 # PyCharm
 .idea/
 *.iml
@@ -151,57 +111,38 @@ cython_debug/
 # Vim
 *.swp
 *.swo
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Other
+.project
+.pydevproject
+.settings/
 *~
 
-# Emacs
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-
+# ==============================================================================
+# OS Files
+# ==============================================================================
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
-Icon
 ._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
 
 # Windows
 Thumbs.db
-Thumbs.db:encryptable
 ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
 [Dd]esktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-*.msm
-*.msp
-*.lnk
 
 # Linux
-*~
-.fuse_hidden*
 .directory
 .Trash-*
-.nfs*
 
-# Data files (typically large, not tracked)
+# ==============================================================================
+# ML Project Data (large files - not tracked)
+# ==============================================================================
 data/raw/*
 data/processed/*
 data/external/*
@@ -209,7 +150,9 @@ data/external/*
 !data/processed/.gitkeep
 !data/external/.gitkeep
 
-# Model files (usually too large for git)
+# ==============================================================================
+# ML Models (large files - not tracked)
+# ==============================================================================
 models/*.h5
 models/*.pkl
 models/*.pickle
@@ -220,9 +163,13 @@ models/*.pb
 models/*.onnx
 models/*.tflite
 models/*.joblib
+models/*.keras
+models/*.pth.tar
 !models/.gitkeep
 
-# Output files
+# ==============================================================================
+# Outputs
+# ==============================================================================
 outputs/figures/*
 outputs/logs/*
 outputs/*.png
@@ -232,17 +179,21 @@ outputs/*.pdf
 !outputs/figures/.gitkeep
 !outputs/logs/.gitkeep
 
+# ==============================================================================
 # Logs
+# ==============================================================================
 logs/
 *.log
 
-# Experiment tracking
+# ==============================================================================
+# Experiment Tracking
+# ==============================================================================
 mlruns/
 wandb/
 .neptune/
 lightning_logs/
 
-# TensorFlow
+# TensorFlow artifacts
 *.tfrecord
 *.tfevents.*
 checkpoint
@@ -250,43 +201,13 @@ checkpoint
 *.index
 *.data-*
 
-# PyTorch
-*.pth.tar
-
-# Keras
-*.keras
-
-# Weights & Biases
-wandb/
-
-# MLflow
-mlruns/
-
 # DVC (Data Version Control)
-.dvc
+.dvc/
 *.dvc
 
-# Airflow
-airflow.db
-airflow.cfg
-logs/
-dags/__pycache__/
-
-# Prefect
-.prefect/
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-*.temp
-
-# Database files
-*.db
-*.sqlite
-*.sqlite3
-
-# Secrets and credentials
+# ==============================================================================
+# Secrets & Credentials
+# ==============================================================================
 .env.dev
 .env.local
 .env.*.local
@@ -296,30 +217,43 @@ credentials.json
 *.pem
 *.key
 
-# IDE and editor files
-*.sublime-project
-*.sublime-workspace
-.project
-.pydevproject
-.settings/
-
-# Backup files
+# ==============================================================================
+# Temporary & Backup Files
+# ==============================================================================
+tmp/
+temp/
+*.tmp
+*.temp
 *.bak
 *.backup
-*~
 
-# Compiled files
-*.class
-*.o
-*.obj
+# ==============================================================================
+# Database Files
+# ==============================================================================
+*.db
+*.sqlite
+*.sqlite3
 
-# Package files
-*.jar
-*.war
-*.nar
-*.ear
+# ==============================================================================
+# Documentation Build
+# ==============================================================================
+docs/_build/
+/site
+
+# ==============================================================================
+# Miscellaneous
+# ==============================================================================
+# Cython
+cython_debug/
+
+# Translations
+*.mo
+*.pot
+
+# Archives (usually too large)
 *.zip
 *.tar.gz
 *.rar
 
+# Claude Code
 .claude/

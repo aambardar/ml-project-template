@@ -1,9 +1,14 @@
+# ==============================================================================
 # Git
+# ==============================================================================
 .git
 .gitignore
+.gitattributes
 
-# Python
-__pycache__
+# ==============================================================================
+# Python Bytecode & Build
+# ==============================================================================
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -11,35 +16,22 @@ __pycache__
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
 
-# Virtual environments
-.venv
+# ==============================================================================
+# Virtual Environments
+# ==============================================================================
+.venv/
 venv/
-ENV/
 env/
+ENV/
 
-# IDE and editors
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-*.sublime-project
-*.sublime-workspace
-
-# Testing and coverage
+# ==============================================================================
+# Testing & Coverage
+# ==============================================================================
 .pytest_cache/
 .coverage
 .coverage.*
@@ -48,72 +40,98 @@ htmlcov/
 .nox/
 .hypothesis/
 
-# Type checking and linting
+# ==============================================================================
+# Type Checking & Linting
+# ==============================================================================
 .mypy_cache/
 .dmypy.json
 .ruff_cache/
 
+# ==============================================================================
+# IDEs & Editors
+# ==============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================================
 # Jupyter
+# ==============================================================================
 .ipynb_checkpoints/
 *.ipynb
 
-# Documentation
-docs/_build/
-*.md
-!README.md
-
-# Data files (mount these instead)
-data/raw/*
-data/processed/*
-data/external/*
-
-# Model files (mount or copy explicitly)
-models/*.h5
-models/*.pkl
-models/*.pt
-models/*.pth
-models/*.ckpt
-models/*.onnx
-models/*.joblib
-
-# Output files
+# ==============================================================================
+# Data Files (mount these as volumes instead)
+# ==============================================================================
+data/
+models/
 outputs/
 logs/
-*.log
 
-# Experiment tracking
+# ==============================================================================
+# Experiment Tracking
+# ==============================================================================
 mlruns/
 wandb/
 .neptune/
 lightning_logs/
 
-# Secrets and credentials
-.env.dev
+# ==============================================================================
+# Secrets & Credentials (NEVER include in image)
+# ==============================================================================
 .env.*
+.env.dev
+.env.test
+.env.prod
+.env.example
 secrets.yaml
 secrets.json
 credentials.json
 *.pem
 *.key
 
-# OS files
+# ==============================================================================
+# OS Files
+# ==============================================================================
 .DS_Store
 Thumbs.db
 
-# Temporary files
+# ==============================================================================
+# Temporary Files
+# ==============================================================================
 tmp/
 temp/
 *.tmp
 *.temp
 *.bak
 
-# Docker
-docker/Dockerfile
+# ==============================================================================
+# Docker Compose Files (not needed inside container)
+# ==============================================================================
 docker-compose.yml
-.docker/
+docker-compose.*.yml
 
-# CI/CD
+# ==============================================================================
+# CI/CD & Project Config (not needed inside container)
+# ==============================================================================
 .github/
 .gitlab-ci.yml
 .travis.yml
 Jenkinsfile
+Makefile
+.pre-commit-config.yaml
+
+# ==============================================================================
+# Documentation (not needed inside container)
+# ==============================================================================
+*.md
+docs/
+
+# ==============================================================================
+# Claude Code
+# ==============================================================================
+.claude/
