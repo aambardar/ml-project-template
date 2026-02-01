@@ -265,6 +265,9 @@ clean:
 	docker compose --env-file $(ENV_FILE) down --rmi local --volumes --remove-orphans 2>/dev/null || true
 	rm -rf __pycache__ .pytest_cache .mypy_cache .coverage htmlcov
 	rm -rf build dist *.egg-info .ruff_cache
+	rm -rf .ipynb_checkpoints .hypothesis
+	rm -rf mlruns wandb lightning_logs
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".ipynb_checkpoints" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	@echo "Cleaned up containers, images, and cache files."
