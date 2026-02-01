@@ -186,10 +186,33 @@ vm-setup:
 
 sync-vm:
 	@echo "Syncing project to VM ($(VM_HOST))..."
-	rsync -avz --exclude '.git' --exclude '__pycache__' --exclude '.venv' \
-		--exclude 'htmlcov' --exclude '.pytest_cache' --exclude '.mypy_cache' \
-		--exclude '*.pyc' --exclude '.coverage' --exclude 'data/' \
-		--exclude 'models/' --exclude 'outputs/' \
+	rsync -avz \
+		--exclude '.git' \
+		--exclude '__pycache__' \
+		--exclude '*.pyc' \
+		--exclude '.venv' \
+		--exclude 'venv/' \
+		--exclude '.env.*' \
+		--exclude '.idea/' \
+		--exclude '.vscode/' \
+		--exclude '.claude/' \
+		--exclude '.DS_Store' \
+		--exclude 'htmlcov/' \
+		--exclude '.pytest_cache/' \
+		--exclude '.mypy_cache/' \
+		--exclude '.ruff_cache/' \
+		--exclude '.coverage' \
+		--exclude '.ipynb_checkpoints/' \
+		--exclude 'mlruns/' \
+		--exclude 'wandb/' \
+		--exclude 'lightning_logs/' \
+		--exclude 'data/' \
+		--exclude 'models/' \
+		--exclude 'outputs/' \
+		--exclude 'logs/' \
+		--exclude 'build/' \
+		--exclude 'dist/' \
+		--exclude '*.egg-info/' \
 		. $(VM_HOST):~/workspace/projects/$$(basename $$(pwd))/
 	@echo ""
 	@echo "Project synced to VM."
